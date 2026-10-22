@@ -1,0 +1,9 @@
+name: OneInTheChamber
+description: $description
+version: '${version}'
+
+main: me.lukiiy.oneInTheChamber.OneInTheChamber
+api-version: '1.21.11'
+load: POSTWORLD
+
+authors: [ Lukiiy ]
