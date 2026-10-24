@@ -18,8 +18,9 @@ public class Entry extends GameEntry {
         return maps.isEmpty() ? List.of(new Option<>("none", "No maps available")) : maps;
     }));
 
-    public final BooleanSetting doubleJump = setting(new BooleanSetting("doubleJump", "Double Jump", "Players spawn next to each other", false));
+    public final DoubleSetting timer = setting(new DoubleSetting("timer", "Timer", "", 5, 100, 20, 1));
     public final DoubleSetting score = setting(new DoubleSetting("score", "Max Score", "Score needed to win the game", 5, 100, 20, 1));
+    public final BooleanSetting doubleJump = setting(new BooleanSetting("doubleJump", "Double Jump", "Players spawn next to each other", false));
 
     public Entry() {
         super("oitc", "One In The Chamber", Game::new, Component.text("One in the Chamber").color(NamedTextColor.GOLD));
