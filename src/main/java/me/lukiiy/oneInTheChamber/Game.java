@@ -5,7 +5,6 @@ import me.lukiiy.oneInTheChamber.arena.ArenaAdapter;
 import me.lukiiy.oneInTheChamber.arena.ArenaData;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
@@ -45,7 +44,7 @@ public class Game extends Minigame {
         refreshBar();
     };
 
-    private final BossBar bossBar = BossBar.bossBar(Component.text("Waiting...").color(NamedTextColor.GOLD), 1f, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS);
+    private final BossBar bossBar = BossBar.bossBar(Component.empty(), 1, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS);
 
     @Override
     protected List<Listener> listeners() {
@@ -132,7 +131,7 @@ public class Game extends Minigame {
     }
 
     private void refreshBar() {
-        bossBar.name(Component.text("Reach " + scoreLimit + " points ▌ " + timer.intValue() + "s left").color(FDefaults.PURPLE));
+        bossBar.name(Component.text("Reach " + scoreLimit + "! ◆ " + timer.intValue() + "s left").color(FDefaults.PURPLE));
     }
 
     private void end(FlowPlayer winner) {
