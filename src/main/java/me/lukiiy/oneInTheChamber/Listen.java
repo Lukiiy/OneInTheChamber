@@ -5,8 +5,6 @@ import me.lukiiy.flow.FDefaults;
 import me.lukiiy.flow.FlowPlayer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Arrow;
@@ -18,7 +16,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BoundingBox;
 
 import java.util.HashSet;
@@ -119,7 +116,7 @@ public class Listen implements Listener {
                 }
 
                 p.damage(2, source);
-            }, null, 5L, 20L);
+            }, null, 5L, 10L);
         }
     }
 
