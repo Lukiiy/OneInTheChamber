@@ -20,7 +20,7 @@ public class Entry extends GameEntry {
 
     public final DoubleSetting timer = setting(new DoubleSetting("timer", "Timer (minutes)", "", 1, 30, 5, 1));
     public final DoubleSetting score = setting(new DoubleSetting("score", "Max Score", "Score needed to win the game", 5, 100, 20, 1));
-    public final BooleanSetting doubleJump = setting(new BooleanSetting("doubleJump", "Double Jump", "Players spawn next to each other", false));
+    public final BooleanSetting doubleJump = setting(new BooleanSetting("doubleJump", "Double Jump", "Allows jumping mid air", false));
 
     public Entry() {
         super("oitc", "One In The Chamber", Game::new, Component.text("One in the Chamber").color(NamedTextColor.GOLD));

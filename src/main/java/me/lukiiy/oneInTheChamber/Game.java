@@ -90,6 +90,7 @@ public class Game extends Minigame {
             p.setRespawnLocation(spawns.get(random.nextInt(spawns.size())), true);
             Items.apply(p);
             boards.put(p.getUniqueId(), new Board(p));
+            if (entry().doubleJump.getValue()) p.setAllowFlight(true);
         });
 
         refreshBar();

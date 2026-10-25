@@ -4,8 +4,9 @@ import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import me.lukiiy.flow.FDefaults;
 import me.lukiiy.flow.FlowPlayer;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Arrow;
@@ -16,7 +17,9 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.BoundingBox;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -144,5 +147,38 @@ public class Listen implements Listener {
         if (getFlowPlayer(e.getPlayer()) == null) return;
 
         e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void flight(PlayerToggleFlightEvent e) {
+        if (!game.entry().doubleJump.getValue()) return;
+
+        Player p = e.getPlayer();
+        if (p.getGameMode().isInvulnerable()) return;
+
+        e.setCancelled(true);
+        p.setAllowFlight(false);
+        p.setFlying(false);
+
+        Location loc = p.getLocation();
+
+        p.setVelocity(loc.getDirection().multiply(1).setY(.8));
+        loc.getWorld().playSound(loc, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 1, 1f);
+        loc.getWorld().spawnParticle(Particle.CLOUD, loc, 3, .25, .25, .25, 0.125, 0, true);
+        p.getScheduler().runAtFixedRate(OneInTheChamber.getInstance(), t -> {
+            BoundingBox box = p.getBoundingBox();
+            int y = (int) Math.floor(box.getMinY() - .05);
+            World world = p.getWorld();
+
+            int minX = (int) Math.floor(box.getMinX());
+            int maxX = (int) Math.floor(box.getMaxX());
+            int minZ = (int) Math.floor(box.getMinZ());
+            int maxZ = (int) Math.floor(box.getMaxZ());
+
+            if (world.getBlockAt(minX, y, minZ).getType().isSolid() || world.getBlockAt(maxX, y, minZ).getType().isSolid() || world.getBlockAt(minX, y, maxZ).getType().isSolid() || world.getBlockAt(maxX, y, maxZ).getType().isSolid()) { // Like, imagine doing all of this just to not use a deprecated function
+                p.setAllowFlight(true);
+                t.cancel();
+            }
+        }, null, 5L, 1L);
     }
 }
