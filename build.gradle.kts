@@ -10,11 +10,11 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
-    compileOnly(files("lib/paper0.jar"))
+    compileOnly(files("lib/paper.jar"))
     implementation(files("lib/mapling.jar"))
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 tasks {
     shadowJar {
