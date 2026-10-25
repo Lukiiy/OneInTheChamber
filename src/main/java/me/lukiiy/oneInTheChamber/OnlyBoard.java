@@ -23,7 +23,7 @@ public class OnlyBoard {
 
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         objective.numberFormat(NumberFormat.blank());
-        this.player.setScoreboard(scoreboard);
+        player.setScoreboard(scoreboard);
     }
 
     public void setTitle(Component title) {
@@ -34,35 +34,30 @@ public class OnlyBoard {
         int total = lines.length;
 
         for (int i = 0; i < total; i++) {
-            Component component = lines[i];
             int scoreIdx = total - i;
+            Component pre = lines[i];
 
-            Team team = teams.computeIfAbsent(scoreIdx, idx -> {
+            teams.computeIfAbsent(scoreIdx, idx -> {
                 String anchor = "§" + Integer.toHexString(idx);
-                Team newTeam = scoreboard.registerNewTeam("line_" + idx);
+                Team team = scoreboard.registerNewTeam("line_" + idx);
 
-                newTeam.addEntry(anchor);
+                team.addEntry(anchor);
                 objective.getScore(anchor).setScore(idx);
 
-                return newTeam;
-            });
-
-            team.prefix(component);
+                return team;
+            }).prefix(pre);
         }
 
-        var iterator = teams.entrySet().iterator();
-
-        while (iterator.hasNext()) {
-            var entry = iterator.next();
-            Team team = entry.getValue();
-
+        teams.entrySet().removeIf(entry -> {
             if (entry.getKey() > total) {
-                for (String tEntry : team.getEntries()) scoreboard.resetScores(tEntry);
+                entry.getValue().getEntries().forEach(scoreboard::resetScores);
+                entry.getValue().unregister();
 
-                team.unregister();
-                iterator.remove();
+                return true;
             }
-        }
+
+            return false;
+        });
     }
 
     public void destroy() {
