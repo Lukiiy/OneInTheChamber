@@ -70,6 +70,12 @@ public class Listen implements Listener {
         e.deathMessage(null);
         e.deathScreenMessageOverride(null);
 
+        Location loc = p.getLocation();
+        double w = p.getWidth() / 2;
+        double h = p.getHeight() / 2;
+
+        loc.getWorld().spawnParticle(Particle.BLOCK, loc.clone().add(0, h, 0), 20, w, h, w, 0, Material.REDSTONE_BLOCK.createBlockData());
+
         Stats stats = fp.get(Stats.class);
         if (stats == null || stats.last == null) return;
 
