@@ -26,11 +26,11 @@ public class OnlyBoard {
         player.setScoreboard(scoreboard);
     }
 
-    public void setTitle(Component title) {
+    public void title(Component title) {
         objective.displayName(title);
     }
 
-    public void updateLines(Component... lines) {
+    public void lines(Component... lines) {
         int total = lines.length;
 
         for (int i = 0; i < total; i++) {
