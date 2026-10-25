@@ -18,7 +18,7 @@ public class Entry extends GameEntry {
         return maps.isEmpty() ? List.of(new Option<>("none", "No maps available")) : maps;
     }));
 
-    public final DoubleSetting timer = setting(new DoubleSetting("timer", "Timer", "", 1, 30, 5, 1));
+    public final DoubleSetting timer = setting(new DoubleSetting("timer", "Timer (minutes)", "", 1, 30, 5, 1));
     public final DoubleSetting score = setting(new DoubleSetting("score", "Max Score", "Score needed to win the game", 5, 100, 20, 1));
     public final BooleanSetting doubleJump = setting(new BooleanSetting("doubleJump", "Double Jump", "Players spawn next to each other", false));
 
