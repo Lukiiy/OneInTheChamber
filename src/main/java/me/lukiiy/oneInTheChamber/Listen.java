@@ -67,6 +67,8 @@ public class Listen implements Listener {
 
         e.getDrops().clear();
         e.setDroppedExp(0);
+        e.deathMessage(null);
+        e.deathScreenMessageOverride(null);
 
         Stats stats = fp.get(Stats.class);
         if (stats == null || stats.last == null) return;
@@ -75,7 +77,7 @@ public class Listen implements Listener {
         FlowPlayer lastFp = getFlowPlayer(last);
         if (lastFp == null) return;
 
-        last.getInventory().addItem(ItemStack.of(Material.ARROW));
+        last.getInventory().addItem(Items.ARROW);
         last.heal(20, EntityRegainHealthEvent.RegainReason.SATIATED);
         last.playSound(last, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.8f);
         game.addScore(lastFp);
@@ -83,7 +85,6 @@ public class Listen implements Listener {
         String way = e.getDamageSource().isIndirect() ? "\uD83C\uDFF9" : "\uD83D\uDDE1";
 
         e.deathMessage(Component.empty().append(Component.text("☠ ").color(FDefaults.RED)).append(last.displayName().color(FDefaults.LIGHT_YELLOW)).append(Component.text(" " + way + " ").color(FDefaults.YELLOW)).append(p.displayName().color(FDefaults.LIGHT_YELLOW)));
-        e.deathScreenMessageOverride(Component.empty().append(last.displayName()).append(Component.text(" " + way + " You")));
     }
 
     @EventHandler
