@@ -10,6 +10,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.util.*;
@@ -66,7 +67,12 @@ public class Game extends Minigame {
         world.setGameRule(GameRules.ADVANCE_TIME, false);
         world.setGameRule(GameRules.ADVANCE_WEATHER, false);
 
-        spawns = new ArrayList<>(arena.getGroup("spawn"));
+        spawns = new ArrayList<>(arena.getGroup("spawn").stream().map(spawn -> {
+            Vector dir = world.getSpawnLocation().toVector().subtract(spawn.toVector());
+            float yaw = (float) Math.toDegrees(Math.atan2(-dir.getX(), dir.getZ()));
+
+            return new Location(spawn.getWorld(), spawn.getX(), spawn.getY(), spawn.getZ(), yaw, 0f);
+        }).toList());
     }
 
     @Override
