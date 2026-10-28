@@ -161,7 +161,7 @@ public class Listen implements Listener {
 
         p.setVelocity(loc.getDirection().multiply(1).setY(.8));
         loc.getWorld().playSound(loc, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 1, 1f);
-        loc.getWorld().spawnParticle(Particle.CLOUD, loc, 3, .25, .25, .25, 0.125, 0, true);
+        loc.getWorld().spawnParticle(Particle.CLOUD, loc, 3, .25, .25, .25, 0.125, null, false);
         p.getScheduler().runAtFixedRate(OneInTheChamber.getInstance(), t -> {
             BoundingBox box = p.getBoundingBox();
             int y = (int) Math.floor(box.getMinY() - .05);
@@ -176,6 +176,6 @@ public class Listen implements Listener {
                 p.setAllowFlight(true);
                 t.cancel();
             }
-        }, null, 5L, 1L);
+        }, null, 5L, 2L);
     }
 }
