@@ -3,11 +3,16 @@ package me.lukiiy.oneInTheChamber;
 import me.lukiiy.flow.*;
 import me.lukiiy.oneInTheChamber.arena.ArenaAdapter;
 import me.lukiiy.oneInTheChamber.arena.ArenaData;
+import me.lukiiy.wayTrick.LocatorBar;
+import me.lukiiy.wayTrick.Waypoint;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.util.Vector;
@@ -23,6 +28,7 @@ public class Game extends Minigame {
     private ArenaData arena;
     private World world;
     private List<Location> spawns;
+    private LocatorBar locatorBar;
 
     private int tickCount = 0;
     private final AtomicInteger timer = new AtomicInteger(0);
@@ -30,6 +36,8 @@ public class Game extends Minigame {
     private final ThreadLocalRandom random = ThreadLocalRandom.current();
     private final Map<UUID, Board> boards = new ConcurrentHashMap<>();
     private int scoreLimit;
+
+    private final AttributeModifier attrMod = new AttributeModifier(new NamespacedKey(OneInTheChamber.getInstance(), "a"), -6e7, AttributeModifier.Operation.ADD_NUMBER);
 
     private final GameHandler timerSystem = _ -> {
         if (++tickCount % 20 != 0) return;
@@ -61,7 +69,7 @@ public class Game extends Minigame {
         arena = ArenaData.load(map, source, world);
 
         world.setGameRule(GameRules.IMMEDIATE_RESPAWN, true);
-        world.setGameRule(GameRules.LOCATOR_BAR, false);
+        world.setGameRule(GameRules.LOCATOR_BAR, true);
         world.setGameRule(GameRules.SPAWN_MONSTERS, false);
         world.setGameRule(GameRules.SPAWN_MOBS, false);
         world.setGameRule(GameRules.ADVANCE_TIME, false);
@@ -79,6 +87,7 @@ public class Game extends Minigame {
     protected void onStart() {
         timer.set(entry().timer.getValue().intValue() * 60);
         scoreLimit = entry().score.getValue().intValue();
+        locatorBar = new LocatorBar(OneInTheChamber.getInstance());
         Collections.shuffle(spawns);
 
         Iterator<Location> spawnIt = spawns.iterator();
@@ -96,16 +105,32 @@ public class Game extends Minigame {
             Items.apply(p);
             boards.put(p.getUniqueId(), new Board(p));
             if (entry().doubleJump.getValue()) p.setAllowFlight(true);
+
+            AttributeInstance transmit = p.getAttribute(Attribute.WAYPOINT_TRANSMIT_RANGE);
+            if (transmit != null) transmit.addModifier(attrMod);
         });
 
         refreshBar();
         addSystem(timerSystem);
+
+        getActualPlayers().forEach(target -> {
+            Waypoint waypoint = locatorBar.track(target).color(Color.WHITE);
+
+            getActualPlayers().stream().filter(viewer -> !viewer.getUniqueId().equals(target.getUniqueId())).forEach(waypoint::showTo);
+        });
     }
 
     @Override
     protected void onStop() {
         boards.values().forEach(Board::destroy);
-        forEachPlayer(fp -> fp.getPlayer().hideBossBar(bossBar));
+        forEachPlayer(fp -> {
+            Player p = fp.getPlayer();
+
+            p.hideBossBar(bossBar);
+
+            AttributeInstance transmit = p.getAttribute(Attribute.WAYPOINT_TRANSMIT_RANGE);
+            if (transmit != null) transmit.removeModifier(attrMod);
+        });
 
         BaseLobby lobby = Flow.getInstance().getManager().getLobby();
         if (lobby != null) forEachPlayer(lobby::sendToLobby);
@@ -117,6 +142,11 @@ public class Game extends Minigame {
         }
 
         boards.clear();
+
+        if (locatorBar != null) {
+            locatorBar.close();
+            locatorBar = null;
+        }
     }
 
     // applied after someone respawns
