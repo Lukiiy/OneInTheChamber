@@ -10,7 +10,8 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
-    compileOnly(files("lib/paper.jar")) // engine
+    compileOnly(files("lib/paper0.jar")) // engine
+    implementation(files("lib/waytrick1.jar"))
     implementation(files("lib/mapling.jar"))
 }
 
