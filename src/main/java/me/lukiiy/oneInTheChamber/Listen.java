@@ -38,6 +38,11 @@ public class Listen implements Listener {
     public void dmg(EntityDamageEvent e) {
         if (!(e.getEntity() instanceof Player victim)) return;
 
+        if (!game.going) {
+            e.setCancelled(true);
+            return;
+        }
+
         if (e.getCause() == EntityDamageEvent.DamageCause.FALL) {
             e.setCancelled(true);
             return;
@@ -148,7 +153,7 @@ public class Listen implements Listener {
 
     @EventHandler
     public void flight(PlayerToggleFlightEvent e) {
-        if (!game.entry().doubleJump.getValue()) return;
+        if (!game.entry().doubleJump.getValue() || !game.going) return;
 
         Player p = e.getPlayer();
         if (p.getGameMode().isInvulnerable()) return;

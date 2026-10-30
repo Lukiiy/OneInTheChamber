@@ -18,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.util.Vector;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -36,6 +37,7 @@ public class Game extends Minigame {
     private final ThreadLocalRandom random = ThreadLocalRandom.current();
     private final Map<UUID, Board> boards = new ConcurrentHashMap<>();
     private int scoreLimit;
+    public boolean going = false;
 
     private final AttributeModifier attrMod = new AttributeModifier(new NamespacedKey(OneInTheChamber.getInstance(), "a"), -6e7, AttributeModifier.Operation.ADD_NUMBER);
 
@@ -111,13 +113,38 @@ public class Game extends Minigame {
         });
 
         refreshBar();
-        addSystem(timerSystem);
 
-        getActualPlayers().forEach(target -> {
-            Waypoint waypoint = locatorBar.track(target).color(Color.WHITE);
+        int totalSeconds = 5;
+        new Countdown(OneInTheChamber.getInstance(), Duration.ofSeconds(totalSeconds), c -> {
+            int secondsLeft = (int) (c + 1);
 
-            getActualPlayers().stream().filter(viewer -> !viewer.getUniqueId().equals(target.getUniqueId())).forEach(waypoint::showTo);
-        });
+            TextColor color;
+            if (secondsLeft > 3) color = FDefaults.GREEN;
+            else if (secondsLeft == 2) color = FDefaults.ORANGE;
+            else if (secondsLeft == 1) color = FDefaults.RED;
+            else color = FDefaults.YELLOW;
+
+            // Action bar countdown :3
+            Component activeC = Component.text("▌".repeat(secondsLeft)).color(color);
+            Component inactiveC = Component.text("▌".repeat(totalSeconds - secondsLeft)).color(FDefaults.DARK_GRAY);
+            Component secC = Component.text(" " + secondsLeft);
+
+            forEachPlayer(p -> {
+                Player player = p.getPlayer();
+
+                player.sendActionBar(Component.text("Game Start ").append(Component.text("»").decorate(TextDecoration.BOLD)).appendSpace().append(activeC).append(inactiveC).append(secC));
+                player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1f, 1f + ((totalSeconds - secondsLeft) * .15f));
+            });
+        }, () -> {
+            going = true;
+
+            addSystem(timerSystem);
+            getActualPlayers().forEach(target -> {
+                Waypoint waypoint = locatorBar.track(target).color(Color.WHITE);
+
+                getActualPlayers().stream().filter(viewer -> !viewer.getUniqueId().equals(target.getUniqueId())).forEach(waypoint::showTo);
+            });
+        }).start();
     }
 
     @Override
